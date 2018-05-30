@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212745191675132950}
   - component: {fileID: 58132552094692214}
   - component: {fileID: 50427200981694222}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 58718516814500230}
   - component: {fileID: 50828179700473726}
   - component: {fileID: 233088953786502988}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   - component: {fileID: 58505671856455974}
   - component: {fileID: 50697521387183508}
   - component: {fileID: 233267708077211818}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tsu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,7 +76,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4937824842681064}
   - component: {fileID: 114231868638308982}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mimitsu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,8 +254,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 227d16def125efd4fa7f340b2e85a094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LinePrefab: {fileID: 1508648768264166, guid: 6d9049d98493194458ec4e41d44ca7dc, type: 2}
   MiPrefab: {fileID: 1641252540988068, guid: e25098e14089f0c469a810e011a4f80a, type: 2}
   force: 10
+  distance: 20
+  mask:
+    serializedVersion: 2
+    m_Bits: 4294967039
 --- !u!212 &212294603624960990
 SpriteRenderer:
   m_ObjectHideFlags: 1
