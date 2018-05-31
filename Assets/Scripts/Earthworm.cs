@@ -6,7 +6,7 @@ public class Earthworm : MonoBehaviour
     public GameObject LinePrefab;
     public GameObject MiPrefab;
     public float force = 10;
-    public float distance = 20;
+    public float ropeSpeed = 2;
     public LayerMask mask;
 
     private Vector3 position;
@@ -17,6 +17,8 @@ public class Earthworm : MonoBehaviour
     {
         position = transform.GetChild(transform.childCount / 2).position;
 
+        Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, position.y, Camera.main.transform.position.z);
+
         #region Manette
         //float horizontal = Input.GetAxis("Horizontal");
         //float vertical = Input.GetAxis("Vertical");
@@ -25,14 +27,15 @@ public class Earthworm : MonoBehaviour
         Vector3 camera = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = camera - position;
 
-        if (Input.GetKeyDown(KeyCode.A))
-            Grab(KeyCode.A, direction);
-        if (Input.GetKeyDown(KeyCode.Z))
-            Grab(KeyCode.Z, direction);
-        if (Input.GetKeyDown(KeyCode.E))
-            Grab(KeyCode.E, direction);
-        if (Input.GetKeyDown(KeyCode.R) && transform.childCount > 3)
-            Grab(KeyCode.R, direction);
+        if (Input.GetKeyDown(KeyCode.Q))
+            Grab(KeyCode.Q, direction);
+        if (Input.GetKeyDown(KeyCode.D))
+            Grab(KeyCode.D, direction);
+
+        if (Input.GetKey(KeyCode.Z))
+            ChangeRopeSize(-1);
+        if (Input.GetKey(KeyCode.S))
+            ChangeRopeSize(1);
 
         if (Input.GetKeyDown(KeyCode.Space))
             AddMi();
@@ -40,79 +43,49 @@ public class Earthworm : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
             RemoveMi();
 
-        if (Input.GetKeyUp(KeyCode.A) && actions.ContainsKey(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.Q) && actions.ContainsKey(KeyCode.Q))
         {
-            Destroy(actions[KeyCode.A].joint);
-            Destroy(actions[KeyCode.A].line);
-            actions.Remove(KeyCode.A);
+            Destroy(actions[KeyCode.Q].joint);
+            Destroy(actions[KeyCode.Q].line);
+            actions.Remove(KeyCode.Q);
         }
-        if (Input.GetKeyUp(KeyCode.Z) && actions.ContainsKey(KeyCode.Z))
+        if (Input.GetKeyUp(KeyCode.D) && actions.ContainsKey(KeyCode.D))
         {
-            Destroy(actions[KeyCode.Z].joint);
-            Destroy(actions[KeyCode.Z].line);
-            actions.Remove(KeyCode.Z);
-        }
-        if (Input.GetKeyUp(KeyCode.E) && actions.ContainsKey(KeyCode.E))
-        {
-            Destroy(actions[KeyCode.E].joint);
-            Destroy(actions[KeyCode.E].line);
-            actions.Remove(KeyCode.E);
-        }
-        if (Input.GetKeyUp(KeyCode.R) && actions.ContainsKey(KeyCode.R))
-        {
-            Destroy(actions[KeyCode.R].joint);
-            Destroy(actions[KeyCode.R].line);
-            actions.Remove(KeyCode.R);
+            Destroy(actions[KeyCode.D].joint);
+            Destroy(actions[KeyCode.D].line);
+            actions.Remove(KeyCode.D);
         }
 
-        foreach(var item in actions)
-        {
-            item.Value.line.GetComponent<LineRenderer>().SetPosition(0, position);
-        }
+        if(actions.ContainsKey(KeyCode.Q))
+            actions[KeyCode.Q].line.GetComponent<LineRenderer>().SetPosition(0, transform.GetChild(0).position);
+        if (actions.ContainsKey(KeyCode.D))
+            actions[KeyCode.D].line.GetComponent<LineRenderer>().SetPosition(0, transform.GetChild(transform.childCount - 1).position);
     }
 
     void Grab(KeyCode key, Vector2 direction)
     {
-        RaycastHit2D hit = Physics2D.Raycast(position, direction, 20, mask);
+        RaycastHit2D hit = Physics2D.Raycast(position, direction, key == KeyCode.Q ? 20 : 150, mask);
         if (hit.collider != null)
         {
             DistanceJoint2D joint = null;
             switch (key)
             {
-                case KeyCode.A:
+                case KeyCode.Q:
                     joint = (DistanceJoint2D)transform.GetChild(0).gameObject.AddComponent(typeof(DistanceJoint2D));
-                    if (actions.ContainsKey(KeyCode.A))
+                    if (actions.ContainsKey(KeyCode.Q))
                     {
-                        Destroy(actions[KeyCode.A].joint);
-                        Destroy(actions[KeyCode.A].line);
-                        actions.Remove(KeyCode.A);
+                        Destroy(actions[KeyCode.Q].joint);
+                        Destroy(actions[KeyCode.Q].line);
+                        actions.Remove(KeyCode.Q);
                     }
                     break;
-                case KeyCode.Z:
-                    joint = (DistanceJoint2D)transform.GetChild(transform.childCount == 3 ? 1 : transform.childCount / 4).gameObject.AddComponent(typeof(DistanceJoint2D));
-                    if (actions.ContainsKey(KeyCode.Z))
-                    {
-                        Destroy(actions[KeyCode.Z].joint);
-                        Destroy(actions[KeyCode.Z].line);
-                        actions.Remove(KeyCode.Z);
-                    }
-                    break;
-                case KeyCode.E:
-                    joint = (DistanceJoint2D)transform.GetChild(transform.childCount * 3 / 4).gameObject.AddComponent(typeof(DistanceJoint2D));
-                    if (actions.ContainsKey(KeyCode.E))
-                    {
-                        Destroy(actions[KeyCode.E].joint);
-                        Destroy(actions[KeyCode.E].line);
-                        actions.Remove(KeyCode.E);
-                    }
-                    break;
-                case KeyCode.R:
+                case KeyCode.D:
                     joint = (DistanceJoint2D)transform.GetChild(transform.childCount - 1).gameObject.AddComponent(typeof(DistanceJoint2D));
-                    if (actions.ContainsKey(KeyCode.R))
+                    if (actions.ContainsKey(KeyCode.D))
                     {
-                        Destroy(actions[KeyCode.R].joint);
-                        Destroy(actions[KeyCode.R].line);
-                        actions.Remove(KeyCode.R);
+                        Destroy(actions[KeyCode.D].joint);
+                        Destroy(actions[KeyCode.D].line);
+                        actions.Remove(KeyCode.D);
                     }
                     break;
                 default:
@@ -127,6 +100,18 @@ public class Earthworm : MonoBehaviour
             renderer.SetPositions(new Vector3[] { position, hit.point });
 
             actions.Add(key, new ActionItem(joint, line));
+        }
+    }
+
+    void ChangeRopeSize(int direction)
+    {
+        if (actions.ContainsKey(KeyCode.Q))
+        {
+            DistanceJoint2D joint = actions[KeyCode.Q].joint;
+            if (direction > 0)
+                joint.distance += Time.deltaTime * ropeSpeed;
+            else
+                joint.distance -= Time.deltaTime * ropeSpeed;
         }
     }
 
